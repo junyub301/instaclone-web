@@ -47,6 +47,7 @@ npm install --save @fortawesome/free-regular-svg-icons
 ## setup
 
 -   [x] Router
--   [ ] Authentication
--   [ ] Arch.
+-   [x] Authentication
+-   [x] Arch.
 -   [ ] Styles
+-   [ ] Log In
