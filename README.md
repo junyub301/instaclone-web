@@ -7,7 +7,6 @@
 -   styled-components
 
 ```Shell
-#npm
 npm i styled-components
 ```
 
@@ -44,3 +43,10 @@ npm install --save @fortawesome/react-fontawesome
 npm install --save @fortawesome/free-brands-svg-icons
 npm install --save @fortawesome/free-regular-svg-icons
 ```
+
+## setup
+
+-   [x] Router
+-   [ ] Authentication
+-   [ ] Arch.
+-   [ ] Styles
