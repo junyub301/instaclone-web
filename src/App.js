@@ -5,16 +5,7 @@ import NotFound from "./screens/NotFound";
 import { useReactiveVar } from "@apollo/client";
 import { isLoggedInVar, darkModeVar } from "./apollo";
 import { ThemeProvider } from "styled-components";
-
-const lightTheme = {
-    fontColor: "#2c2c2c",
-    bgColor: "lightgray",
-};
-
-const darkTheme = {
-    fontColor: "lightgray",
-    bgColor: "#2c2c2c",
-};
+import { darkTheme, lightTheme, GlobalStyles } from "./styles";
 
 function App() {
     const isLoggedIn = useReactiveVar(isLoggedInVar);
@@ -22,6 +13,7 @@ function App() {
 
     return (
         <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+            <GlobalStyles />
             <Router>
                 <Switch>
                     <Route path='/' exact>

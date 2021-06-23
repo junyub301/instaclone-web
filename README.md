@@ -44,10 +44,16 @@ npm install --save @fortawesome/free-brands-svg-icons
 npm install --save @fortawesome/free-regular-svg-icons
 ```
 
+-   styled-reset
+
+```Shell
+npm i styled-reset
+```
+
 ## setup
 
 -   [x] Router
 -   [x] Authentication
 -   [x] Arch.
--   [ ] Styles
--   [ ] Log In
+-   [x] Styles
+-   [ ] Log In / Sign Up
