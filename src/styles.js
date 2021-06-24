@@ -12,6 +12,14 @@ export const darkTheme = {
 
 export const GlobalStyles = createGlobalStyle`
     ${reset}
-    body {    background-color: ${(props) => props.theme.bgColor};
+    input {
+        all:unset;
+    }
+    *{
+        box-sizing:border-box;
+    }
+    body { 
+        background-color: #FAFAFA;
+        font-size:14px
 }
 `;
