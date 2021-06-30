@@ -20,6 +20,10 @@ export const GlobalStyles = createGlobalStyle`
     }
     body { 
         background-color: #FAFAFA;
-        font-size:14px
-}
+        font-size:14px;
+        font-family:'Open Sans', sans-serif;
+    }
+    a {
+        text-decoration: none;
+    }
 `;
