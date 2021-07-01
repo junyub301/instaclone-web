@@ -11,6 +11,7 @@ import Separator from "../components/auth/Separator";
 import Input from "../components/auth/Input";
 import FormBox from "../components/auth/FormBox";
 import BottomBox from "../components/auth/BottomBox";
+import { useState } from "react";
 
 const FacebookLogin = styled.div`
   color: #385285;
@@ -21,16 +22,47 @@ const FacebookLogin = styled.div`
 `;
 
 const Login = () => {
+  const [username, setUsername] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const onUsernameChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setUsernameError("");
+    setUsername(value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (username === "") {
+      setUsernameError("Not empty pls.");
+    }
+    if (username.length < 10) {
+      setUsernameError("too short");
+    }
+  };
+
   return (
     <AuthLayout>
       <FormBox>
         <div>
           <FontAwesomeIcon icon={faInstagram} size="3x" />
         </div>
-        <form>
-          <Input type="text" placeholder="Username" required />
-          <Input type="password" placeholder="Password" required />
-          <Button type="submit" value="Log in" />
+        <form onSubmit={handleSubmit}>
+          {usernameError}
+          <Input
+            value={username}
+            onChange={onUsernameChange}
+            type="text"
+            placeholder="Username"
+            required
+          />
+          <Input type="password" placeholder="Password" />
+          <Button
+            type="submit"
+            value="Log in"
+            disabled={username === "" && username.length < 10}
+          />
         </form>
         <Separator />
 
