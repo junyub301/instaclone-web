@@ -1,3 +1,4 @@
+import React from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -12,6 +13,7 @@ import Input from "../components/auth/Input";
 import FormBox from "../components/auth/FormBox";
 import BottomBox from "../components/auth/BottomBox";
 import PageTitle from "../components/PageTitle";
+import { useForm } from "react-hook-form";
 
 const FacebookLogin = styled.div`
     color: #385285;
@@ -22,6 +24,13 @@ const FacebookLogin = styled.div`
 `;
 
 const Login = () => {
+    const { register, handleSubmit } = useForm();
+    const onSubmitValid = (data) => {
+        console.log(data);
+    };
+    const onSubmitInvalid = (data) => {
+        console.log(data);
+    };
     return (
         <AuthLayout>
             <PageTitle title='Login' />
@@ -29,9 +38,24 @@ const Login = () => {
                 <div>
                     <FontAwesomeIcon icon={faInstagram} size='3x' />
                 </div>
-                <form>
-                    <Input type='text' placeholder='Username' required />
-                    <Input type='password' placeholder='Password' />
+                <form onSubmit={handleSubmit(onSubmitValid, onSubmitInvalid)}>
+                    <Input
+                        {...register("username", {
+                            required: "Username is required",
+                            minLength: 5,
+                        })}
+                        name='username'
+                        type='text'
+                        placeholder='Username'
+                    />
+                    <Input
+                        {...register("password", {
+                            required: "Password is required",
+                        })}
+                        name='password'
+                        type='password'
+                        placeholder='Password'
+                    />
                     <Button type='submit' value='Log in' />
                 </form>
                 <Separator />
