@@ -14,6 +14,7 @@ import FormBox from "../components/auth/FormBox";
 import BottomBox from "../components/auth/BottomBox";
 import PageTitle from "../components/PageTitle";
 import { useForm } from "react-hook-form";
+import FormError from "../components/auth/FormError";
 
 const FacebookLogin = styled.div`
     color: #385285;
@@ -24,13 +25,15 @@ const FacebookLogin = styled.div`
 `;
 
 const Login = () => {
-    const { register, handleSubmit } = useForm();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isValid },
+    } = useForm({ mode: "onChange" });
     const onSubmitValid = (data) => {
-        console.log(data);
+        // console.log(data);
     };
-    const onSubmitInvalid = (data) => {
-        console.log(data);
-    };
+
     return (
         <AuthLayout>
             <PageTitle title='Login' />
@@ -38,16 +41,23 @@ const Login = () => {
                 <div>
                     <FontAwesomeIcon icon={faInstagram} size='3x' />
                 </div>
-                <form onSubmit={handleSubmit(onSubmitValid, onSubmitInvalid)}>
+                <form onSubmit={handleSubmit(onSubmitValid)}>
                     <Input
                         {...register("username", {
                             required: "Username is required",
-                            minLength: 5,
+                            minLength: {
+                                value: 5,
+                                message:
+                                    "Username should be loger than 5 chars.",
+                            },
                         })}
                         name='username'
                         type='text'
                         placeholder='Username'
+                        hasError={Boolean(errors?.username?.message)}
                     />
+                    <FormError message={errors?.username?.message} />
+
                     <Input
                         {...register("password", {
                             required: "Password is required",
@@ -55,8 +65,10 @@ const Login = () => {
                         name='password'
                         type='password'
                         placeholder='Password'
+                        hasError={Boolean(errors?.password?.message)}
                     />
-                    <Button type='submit' value='Log in' />
+                    <FormError message={errors?.password?.message} />
+                    <Button type='submit' value='Log in' disabled={!isValid} />
                 </form>
                 <Separator />
 
