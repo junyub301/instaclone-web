@@ -10,30 +10,30 @@ import SignUp from "./screens/SignUp";
 import routes from "./screens/routes";
 
 function App() {
-    const isLoggedIn = useReactiveVar(isLoggedInVar);
-    const darkMode = useReactiveVar(darkModeVar);
+  const isLoggedIn = useReactiveVar(isLoggedInVar);
+  const darkMode = useReactiveVar(darkModeVar);
 
-    return (
-        <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
-            <GlobalStyles />
-            <Router>
-                <Switch>
-                    <Route path={routes.home} exact>
-                        {isLoggedIn ? <Home /> : <Login />}
-                    </Route>
-                    {!isLoggedIn ? (
-                        <Route path={routes.signUp}>
-                            <SignUp />
-                        </Route>
-                    ) : null}
+  return (
+    <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+      <GlobalStyles />
+      <Router>
+        <Switch>
+          <Route path={routes.home} exact>
+            {isLoggedIn ? <Home /> : <Login />}
+          </Route>
+          {!isLoggedIn ? (
+            <Route path={routes.signUp}>
+              <SignUp />
+            </Route>
+          ) : null}
 
-                    <Route>
-                        <NotFound />
-                    </Route>
-                </Switch>
-            </Router>
-        </ThemeProvider>
-    );
+          <Route>
+            <NotFound />
+          </Route>
+        </Switch>
+      </Router>
+    </ThemeProvider>
+  );
 }
 
 // Switch를 사용하면 router가 한번에 하나만 render할수 있게 해준다.
