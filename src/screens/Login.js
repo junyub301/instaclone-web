@@ -16,6 +16,7 @@ import PageTitle from "../components/PageTitle";
 import { useForm } from "react-hook-form";
 import FormError from "../components/auth/FormError";
 import { gql, useMutation } from "@apollo/client";
+import { logUserIn } from "../apollo";
 
 const FacebookLogin = styled.div`
     color: #385285;
@@ -42,6 +43,7 @@ const Login = () => {
         formState: { errors, isValid },
         getValues,
         setError,
+        clearErrors,
     } = useForm({ mode: "onChange" });
 
     const onCompleted = (data) => {
@@ -49,9 +51,12 @@ const Login = () => {
             login: { ok, error, token },
         } = data;
         if (!ok) {
-            setError("result", {
+            return setError("result", {
                 message: error,
             });
+        }
+        if (token) {
+            logUserIn(token);
         }
     };
     const [login, { loading }] = useMutation(LOGIN_MUTATION, { onCompleted });
@@ -63,6 +68,10 @@ const Login = () => {
         login({
             variables: { username, password },
         });
+    };
+
+    const clearLoginError = () => {
+        clearErrors("result");
     };
 
     return (
@@ -82,17 +91,18 @@ const Login = () => {
                                     "Username should be loger than 5 chars.",
                             },
                         })}
+                        onFocus={clearLoginError}
                         name='username'
                         type='text'
                         placeholder='Username'
                         hasError={Boolean(errors?.username?.message)}
                     />
                     <FormError message={errors?.username?.message} />
-
                     <Input
                         {...register("password", {
                             required: "Password is required",
                         })}
+                        onFocus={clearLoginError}
                         name='password'
                         type='password'
                         placeholder='Password'
@@ -104,6 +114,7 @@ const Login = () => {
                         value={loading ? "Loading..." : "Log in"}
                         disabled={!isValid || loading}
                     />
+
                     <FormError message={errors?.result?.message} />
                 </form>
                 <Separator />
