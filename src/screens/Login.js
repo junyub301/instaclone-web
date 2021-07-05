@@ -72,7 +72,9 @@ const Login = () => {
             logUserIn(token);
         }
     };
+
     const [login, { loading }] = useMutation(LOGIN_MUTATION, { onCompleted });
+
     const onSubmitValid = (data) => {
         if (loading) {
             return;

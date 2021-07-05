@@ -51,7 +51,7 @@ function SignUp() {
     const onCompleted = (data) => {
         const { username, password } = getValues();
         const {
-            createAccount: { ok, error },
+            createAccount: { ok },
         } = data;
         if (!ok) {
             return;
@@ -62,17 +62,20 @@ function SignUp() {
             password,
         });
     };
+
     const [createAccount, { loading }] = useMutation(CREATE_ACCOUNT_MUTATION, {
         onCompleted,
     });
+
     const {
         register,
         handleSubmit,
-        formState: { errors, isValid },
+        formState: { isValid },
         getValues,
     } = useForm({
         mode: "onChange",
     });
+
     const onSubmitValid = (data) => {
         if (loading) {
             return;
