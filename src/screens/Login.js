@@ -92,7 +92,6 @@ const Login = () => {
                             },
                         })}
                         onFocus={clearLoginError}
-                        name='username'
                         type='text'
                         placeholder='Username'
                         hasError={Boolean(errors?.username?.message)}
@@ -103,7 +102,6 @@ const Login = () => {
                             required: "Password is required",
                         })}
                         onFocus={clearLoginError}
-                        name='password'
                         type='password'
                         placeholder='Password'
                         hasError={Boolean(errors?.password?.message)}
