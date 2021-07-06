@@ -1,4 +1,10 @@
-import { ApolloClient, InMemoryCache, makeVar } from "@apollo/client";
+import {
+    ApolloClient,
+    createHttpLink,
+    InMemoryCache,
+    makeVar,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 
 const TOKEN = "TOKEN";
 const DARK_MODE = "DARK_MODE";
@@ -26,7 +32,21 @@ export const disableDarkMode = () => {
     darkModeVar(false);
 };
 
-export const client = new ApolloClient({
+const httpLink = createHttpLink({
     uri: "http://localhost:4000/graphql",
+});
+
+const authLink = setContext((_, { headers }) => {
+    return {
+        headers: {
+            ...headers,
+            token: localStorage.getItem(TOKEN),
+        },
+    };
+});
+
+export const client = new ApolloClient({
     cache: new InMemoryCache(),
+    // apollo 클라이언트가 데이터 소스와 소통하는 방식
+    link: authLink.concat(httpLink),
 });
