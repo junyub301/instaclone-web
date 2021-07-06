@@ -1,16 +1,15 @@
+import { ApolloProvider, useReactiveVar } from "@apollo/client";
+import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { ThemeProvider } from "styled-components";
+import { client, darkModeVar, isLoggedInVar } from "./apollo";
+import Layout from "./components/Layout";
 import Home from "./screens/Home";
 import Login from "./screens/Login";
 import NotFound from "./screens/NotFound";
-import { ApolloProvider, useReactiveVar } from "@apollo/client";
-import { isLoggedInVar, darkModeVar, client } from "./apollo";
-import { ThemeProvider } from "styled-components";
-import { darkTheme, lightTheme, GlobalStyles } from "./styles";
-import SignUp from "./screens/SignUp";
 import routes from "./screens/routes";
-import { HelmetProvider } from "react-helmet-async";
-import Header from "./components/auth/Header";
-import Layout from "./components/auth/Layout";
+import SignUp from "./screens/SignUp";
+import { darkTheme, GlobalStyles, lightTheme } from "./styles";
 
 function App() {
     const isLoggedIn = useReactiveVar(isLoggedInVar);
