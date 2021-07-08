@@ -77,31 +77,39 @@ function Photo({ id, user, file, isLiked, likes }) {
         } = result;
 
         if (ok) {
-            cache.writeFragment({
-                id: `Photo:${id}`,
-                // 데이터의 일부분
-                fragment: gql`
-                    # fragment (name) on (type)
-                    fragment BSName on Photo {
-                        # 수정할 부분
-                        isLiked
-                    }
-                `,
-                data: {
-                    isLiked: !isLiked,
-                },
+            const fragementId = `Photo:${id}`;
+            const fragment = gql`
+                # fragment (name) on (type)
+                fragment BSName on Photo {
+                    # 수정할 부분
+                    isLiked
+                    likes
+                }
+            `;
+            const result = cache.readFragment({
+                id: fragementId,
+                fragment,
             });
+            if ("isLiked" in result && "likes" in result) {
+                const { isLiked: cacheIsLiked, likes: chacheLikes } = result;
+                cache.writeFragment({
+                    id: fragementId,
+                    // 데이터의 일부분
+                    fragment,
+                    data: {
+                        isLiked: !cacheIsLiked,
+                        likes: cacheIsLiked ? chacheLikes - 1 : chacheLikes + 1,
+                    },
+                });
+            }
         }
     };
-    const [toggleLikeMutation, { loading }] = useMutation(
-        TOGGLE_LIKE_MUTATION,
-        {
-            variables: {
-                id,
-            },
-            update: updateToggleLike,
-        }
-    );
+    const [toggleLikeMutation] = useMutation(TOGGLE_LIKE_MUTATION, {
+        variables: {
+            id,
+        },
+        update: updateToggleLike,
+    });
     return (
         <PhotoContainer key={id}>
             <PhotoHeader>
