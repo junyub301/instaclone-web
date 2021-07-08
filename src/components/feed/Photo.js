@@ -11,6 +11,7 @@ import {
 import { faHeart as SolidHeart } from "@fortawesome/free-solid-svg-icons";
 import Avatar from "../Avatar";
 import { gql, useMutation } from "@apollo/client";
+import { FEED_QUERY } from "../../screens/Home";
 
 const TOGGLE_LIKE_MUTATION = gql`
     mutation toggleLike($id: Int!) {
@@ -75,6 +76,7 @@ function Photo({ id, user, file, isLiked, likes }) {
             variables: {
                 id,
             },
+            refetchQueries: [{ query: FEED_QUERY }],
         }
     );
     return (
