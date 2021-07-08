@@ -77,6 +77,7 @@ function Photo({ id, user, file, isLiked, likes }) {
         } = result;
 
         if (ok) {
+            // Porps로 값을 넘기지 않았을 경우 cahce를 통해 값을 받아와 update할 수 있다.
             const fragementId = `Photo:${id}`;
             const fragment = gql`
                 # fragment (name) on (type)
