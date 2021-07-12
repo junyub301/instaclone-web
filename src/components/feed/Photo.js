@@ -88,31 +88,21 @@ function Photo({
 
         if (ok) {
             // Porps로 값을 넘기지 않았을 경우 cahce를 통해 값을 받아와 update할 수 있다.
-            const fragementId = `Photo:${id}`;
-            const fragment = gql`
-                # fragment (name) on (type)
-                fragment BSName on Photo {
-                    # 수정할 부분
-                    isLiked
-                    likes
-                }
-            `;
-            const result = cache.readFragment({
-                id: fragementId,
-                fragment,
-            });
-            if ("isLiked" in result && "likes" in result) {
-                const { isLiked: cacheIsLiked, likes: chacheLikes } = result;
-                cache.writeFragment({
-                    id: fragementId,
-                    // 데이터의 일부분
-                    fragment,
-                    data: {
-                        isLiked: !cacheIsLiked,
-                        likes: cacheIsLiked ? chacheLikes - 1 : chacheLikes + 1,
+            const photoId = `Photo:${id}`;
+            cache.modify({
+                id: photoId,
+                fields: {
+                    isLiked(prev) {
+                        return !prev;
                     },
-                });
-            }
+                    likes(prev) {
+                        if (isLiked) {
+                            return prev - 1;
+                        }
+                        return prev + 1;
+                    },
+                },
+            });
         }
     };
     const [toggleLikeMutation] = useMutation(TOGGLE_LIKE_MUTATION, {
