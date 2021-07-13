@@ -24,7 +24,20 @@ const CommentCount = styled.span`
     margin: 10px 0px;
     display: block;
     font-weight: 600;
-    font-size: 12px;
+    font-size: 10px;
+`;
+const PostCommentContainer = styled.div`
+    margin-top: 10px;
+    padding-top: 15px;
+    padding-bottom: 10px;
+    border-top: 1px solid ${(props) => props.theme.borderColor};
+`;
+
+const PostCommentInput = styled.input`
+    width: 100%;
+    &::placeholder {
+        font-size: 12px;
+    }
 `;
 
 function Comments({ photoId, author, caption, commentNumber, comments }) {
@@ -33,7 +46,6 @@ function Comments({ photoId, author, caption, commentNumber, comments }) {
     const createCommentUpdate = (cache, result) => {
         const { payload } = getValues();
         setValue("payload", "");
-
         const {
             data: {
                 createComment: { ok, id },
@@ -50,11 +62,26 @@ function Comments({ photoId, author, caption, commentNumber, comments }) {
                     ...userData.me,
                 },
             };
+            const newChacheComment = cache.writeFragment({
+                data: newComment,
+                fragment: gql`
+                    fragment BSName on Comment {
+                        id
+                        createdAt
+                        isMine
+                        payload
+                        user {
+                            username
+                            avatar
+                        }
+                    }
+                `,
+            });
             cache.modify({
                 id: `Photo:${photoId}`,
                 fields: {
                     comments(prev) {
-                        return [...prev, newComment];
+                        return [...prev, newChacheComment];
                     },
                     commentNumber(prev) {
                         return prev + 1;
@@ -96,15 +123,15 @@ function Comments({ photoId, author, caption, commentNumber, comments }) {
                     payload={comment.payload}
                 />
             ))}
-            <div>
+            <PostCommentContainer>
                 <form onSubmit={handleSubmit(onValid)}>
-                    <input
+                    <PostCommentInput
                         {...register("payload", { required: true })}
                         type='text'
                         placeholder='White a comment...'
                     />
                 </form>
-            </div>
+            </PostCommentContainer>
         </CommentsContainer>
     );
 }
