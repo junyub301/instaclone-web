@@ -3,12 +3,14 @@ import styled from "styled-components";
 import Comment from "./Comment";
 import { useForm } from "react-hook-form";
 import { gql, useMutation } from "@apollo/client";
+import useUser from "../../hooks/useUser";
 
 const CREATE_COMMENT_MUTATION = gql`
     mutation createComment($photoId: Int!, $payload: String!) {
         createComment(photoId: $photoId, payload: $payload) {
             ok
             error
+            id
         }
     }
 `;
@@ -26,10 +28,47 @@ const CommentCount = styled.span`
 `;
 
 function Comments({ photoId, author, caption, commentNumber, comments }) {
+    const { data: userData } = useUser();
+    const { register, handleSubmit, setValue, getValues } = useForm();
+    const createCommentUpdate = (cache, result) => {
+        const { payload } = getValues();
+        setValue("payload", "");
+
+        const {
+            data: {
+                createComment: { ok, id },
+            },
+        } = result;
+        if (ok && userData?.me) {
+            const newComment = {
+                __typename: "Comment",
+                createdAt: Date.now() + "",
+                id,
+                isMine: true,
+                payload,
+                user: {
+                    ...userData.me,
+                },
+            };
+            cache.modify({
+                id: `Photo:${photoId}`,
+                fields: {
+                    comments(prev) {
+                        return [...prev, newComment];
+                    },
+                    commentNumber(prev) {
+                        return prev + 1;
+                    },
+                },
+            });
+        }
+    };
     const [createCommentMutation, { loading }] = useMutation(
-        CREATE_COMMENT_MUTATION
+        CREATE_COMMENT_MUTATION,
+        {
+            update: createCommentUpdate,
+        }
     );
-    const { register, handleSubmit, setValue } = useForm();
     const onValid = (data) => {
         const { payload } = data;
         if (loading) {
@@ -41,7 +80,6 @@ function Comments({ photoId, author, caption, commentNumber, comments }) {
                 payload,
             },
         });
-        setValue("payload", "");
     };
     return (
         <CommentsContainer>
