@@ -46,7 +46,13 @@ const authLink = setContext((_, { headers }) => {
 });
 
 export const client = new ApolloClient({
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+        typePolicies: {
+            User: {
+                keyFields: (obj) => `User:${obj.username}`,
+            },
+        },
+    }),
     // apollo 클라이언트가 데이터 소스와 소통하는 방식
     link: authLink.concat(httpLink),
 });
