@@ -47,6 +47,7 @@ const authLink = setContext((_, { headers }) => {
 
 export const client = new ApolloClient({
     cache: new InMemoryCache({
+        // id가 아닌 고유 식별자를 설정할 때 사용
         typePolicies: {
             User: {
                 keyFields: (obj) => `User:${obj.username}`,

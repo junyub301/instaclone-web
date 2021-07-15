@@ -71,8 +71,8 @@ function Header() {
                             </Icon>
                         </IconsContainer>
                     ) : (
-                        <Link href={routes.home}>
-                            <Button>Login</Button>
+                        <Link to={routes.home}>
+                            <FontAwesomeIcon icon={faHome} size='lg' />
                         </Link>
                     )}
                 </Column>
