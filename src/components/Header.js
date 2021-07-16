@@ -58,9 +58,9 @@ function Header() {
                 <Column>
                     {isLoggedIn ? (
                         <IconsContainer>
-                            <Icon>
+                            <Link to={routes.home}>
                                 <FontAwesomeIcon icon={faHome} size='lg' />
-                            </Icon>
+                            </Link>
                             <Icon>
                                 <FontAwesomeIcon icon={faCompass} size='lg' />
                             </Icon>
@@ -71,8 +71,8 @@ function Header() {
                             </Icon>
                         </IconsContainer>
                     ) : (
-                        <Link to={routes.home}>
-                            <FontAwesomeIcon icon={faHome} size='lg' />
+                        <Link href={routes.home}>
+                            <Button>Login</Button>
                         </Link>
                     )}
                 </Column>
