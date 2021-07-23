@@ -67,40 +67,40 @@ npm i styled-reset
 ## React Router
 - url들을 가져와서, 각 url에 맞는 component를 연결 시켜줌.
 - 사용법
-```javascript
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
+  ```javascript
+  import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+  } from "react-router-dom";
 
-export default function App() {
-  return (
-    <Router>
-        // Switch는 한번에 딱 하나의 route만 render 시킨다.
-        // Switch를 쓰지 않으면 router는 많은 route를 동시에, 최대로 render한다.
-        <Switch>
-            // exact : url이 정확히 맞는지 확인
-            // path="/"에 exact를 쓰지 않으면 path에 "/"이 포함된 모든 화면은 path="/"인 Home 화면을 출력한다.
-            <Route path="/" exact>
-              <Home />
-            </Route>
-            <Route path="/about">
-              <About />
-            </Route>
-            <Route path="/users">
-              <Users />
-            </Route>
-            // 지정되지 않은 path는 NotFound 페이지로 넘어간다.
-            <Route>
-              <NotFound />
-            </Route>
-        </Switch>
-    </Router>
-  )
-}
-```
+  export default function App() {
+    return (
+      <Router>
+          // Switch는 한번에 딱 하나의 route만 render 시킨다.
+          // Switch를 쓰지 않으면 router는 많은 route를 동시에, 최대로 render한다.
+          <Switch>
+              // exact : url이 정확히 맞는지 확인
+              // path="/"에 exact를 쓰지 않으면 path에 "/"이 포함된 모든 화면은 path="/"인 Home 화면을 출력한다.
+              <Route path="/" exact>
+                <Home />
+              </Route>
+              <Route path="/about">
+                <About />
+              </Route>
+              <Route path="/users">
+                <Users />
+              </Route>
+              // 지정되지 않은 path는 NotFound 페이지로 넘어간다.
+              <Route>
+                <NotFound />
+              </Route>
+          </Switch>
+      </Router>
+    )
+  }
+  ```
 
 ## Apollo Client
 - Reactive variables : Apollo Client 캐시 외부에 로컬 상태를 저장
