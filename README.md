@@ -116,7 +116,7 @@ export default function App() {
   ``` 
   [apllo.js]
 
-    - react.js component 내부에서 사용할 시 **useReactiveVar** hook 사용
+    - react.js component 내부에서 사용할 시 ```useReactiveVar``` hook 사용
   ```js
     import {itemVar} from "./apllo.js";
     import {useReactiveVar} from "@apollo/client";
