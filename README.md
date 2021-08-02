@@ -193,7 +193,24 @@ npm i styled-reset
     import { useForm } from "react-hook-form";
 
     export default function App() {
-        
+        const { register, handleSubmit, watch, formState: { errors } } = useForm({
+            <!-- "onChange | onBlur | onSubmit | onTouched | all = 'onSubmit'" -->
+            mode:"onChange" 
+            <!-- 개별로 지정 할 수도 있고 한번에 지정 할 수도 있다. -->
+            defaultValues: {
+                test:"test"
+            },
+            ...
+        });
+        const onSubmit = data => console.log(data)
+        return (
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <input  {...register("test"), {required:true}} />
+                <input defaultValue="test2" {...register("test2"), {required:"test2 is required"}} />
+                {{errors?.test2?.message}}
+            </form>
+        )
+
     }
     ```
 
