@@ -130,6 +130,73 @@ npm i styled-reset
 
   ```
 
+## Styled Components
+- 사용법
+    ```javascript
+    import styled from "styled-components";
+
+    const Container = styled.div`
+        background-color: white;
+        ...
+    `;
+
+    function App() {
+        return (
+            <Container>...</Container>
+        )
+    }
+    ```  
+  - ThemeProvider : 기본적으로 theme을 제공한다. ThemeProvider로 감싸면 하위 components들은 theme prop를 가진다.
+  - GlobalStyle : 전체적으로 들어가야 할 style 적용
+  - reset : css를 reset 시켜준다.
+    ```javascript
+    import styled,{ThemeProvider, createGlobalStyle} from "styled-components";
+    import reset from "styled-reset";
+
+
+    const Button = styled.div`
+        color: ${props => props.theme.fontColor};
+        ...
+    `;
+
+    const GlobalStyles = createGlobalStyle`
+        ${rest}
+        body {
+            backgrodn-color : black;
+            ...
+        }
+        form {
+            ...
+        }
+        p {
+            ...
+        }
+    `;
+
+    const theme = {
+        fontColor : "black",
+    }
+
+    function App() {
+        return (
+            <ThemeProvider theme={theme}>
+                <GlobalStyles />
+                <Button>...</Button>
+            </ThemeProvider>
+        )
+    }
+    ```
+
+## React-Hook-Form
+- 사용법
+    ```javascript
+    import { useForm } from "react-hook-form";
+
+    export default function App() {
+        
+    }
+    ```
+
 ## setup
 -   [x] Router
 -   [x] Authentication
