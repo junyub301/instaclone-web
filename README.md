@@ -103,6 +103,57 @@ npm i styled-reset
   ```
 
 ## Apollo Client
+- 사용법
+    ```javascript
+        import {
+            ApolloClient,
+            InMemoryCache,
+            ApolloProvider,
+            useQuery,
+            gql
+        } from "@apollo/client";
+
+        const client = new ApolloClient({
+            // backend url
+            uri: 'https://48p1r2roz4.sse.codesandbox.io',
+            cache: new InMemoryCache()
+        });
+    ```
+  [apllo.js]
+
+  - ApolloPorovider로 감싸 줘야한다.
+    ```javascript
+        import { ApolloProvider } from "@apollo/client";
+        import {client} from "./apollo.js";
+
+        function App() {
+        <ApolloProvider client={client}>
+            ...
+        </ApolloProvider>
+        }
+    ```
+  - Apollo Client에 사용자 지정 링크 추가 (Http 요청 전 헤더 추가)
+    ```javascript
+        import { ApolloClient, HttpLink, ApolloLink, InMemoryCache, concat } from '@apollo/client';
+        import { setContext } from "@apollo/client/link/context";   
+
+
+        const httpLink = new HttpLink({ uri: 'https://48p1r2roz4.sse.codesandbox.io' });
+
+        const authLink = setContext((_,{ headers = {} }) => {
+            return {
+                headers: {
+                ...headers,
+                authorization: localStorage.getItem('token') || null,
+                }
+            };
+        });
+        
+        const client = new ApolloClient({
+            link: authLink.concat(httpLink),
+            cache: new InMemoryCache(),
+        });    
+    ```
 - Reactive variables : Apollo Client 캐시 외부에 로컬 상태를 저장
   - 사용법
   ```javascript
@@ -194,9 +245,10 @@ npm i styled-reset
 
     export default function App() {
         const { register, handleSubmit, watch, formState: { errors } } = useForm({
-            <!-- "onChange | onBlur | onSubmit | onTouched | all = 'onSubmit'" -->
+             // "onChange | onBlur | onSubmit | onTouched | all = 'onSubmit'"
             mode:"onChange" 
-            <!-- 개별로 지정 할 수도 있고 한번에 지정 할 수도 있다. -->
+
+            // 개별로 지정 할 수도 있고 한번에 지정 할 수도 있다. 
             defaultValues: {
                 test:"test"
             },
