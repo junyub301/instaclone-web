@@ -180,7 +180,136 @@ npm i styled-reset
     }
 
   ```
+- Cache 사용하기
+  - useMutation에서 update하기
+    - update : 백엔드에서 받은 데이터를 주는 function + apollo cache에 직접 link 해준다.
+    ```javascript
+    import {gql, useMutation} from "@apollo/client";
+    ...
 
+    const TOGGLE_LIKE_MUTATION = gql`
+        mutation toggleLike($id: Int!) {
+            toggleLike(id: $id) {
+                ok
+                error
+            }
+        }
+    `;
+
+    function App() {
+        const updateToggleLike = (cache, result) => {
+        const {
+            data: {
+                toggleLike: { ok },
+                },
+            } = result;
+
+            if (ok) {
+            // cache 수정 (cache.modify / cache.writeFragment ...) 작업
+            ...
+            }
+        };
+        const [toggleLikeMutation] = useMutation(TOGGLE_LIKE_MUTATION, {
+            variables: {
+                id,
+            },
+            update: updateToggleLike,
+        });
+        return (
+            <>
+                ...
+            </>
+        )
+    }
+    
+    ``` 
+  - writeFragment : cache에서 특정 object의 일부분을 수정하는 것.
+    ```javascript
+        function Something ({id, completed, others}) {
+            const updateSometingCache = (cache, result) => {
+                cache.writeFragment({
+                    // write할 fragment Id
+                    id: `Todo:${id}`,
+
+                    // fragment ~ on (Type)형식으로 사용
+                    fragment: gql`
+                        fragment MyTodo on Todo {
+                            // cache에서 수정하려는 부분을 적어준다.
+                            completed
+                            otehrs
+                        }
+                    `,
+                    // cache에 어떤걸 write 할지 
+                    data: {
+                        completed: !completed,
+                        others: completed ? others - 1 : otehrs + 1;
+                    },
+                });
+            }
+            ...
+        }
+    ```
+  - readFragement : 필요한 값을 porps로 넘기지 않았을 경우 cahce에서 불러올 수 있다.
+    ```javascript
+        function Something ({id}) {
+            const updateSometingCache = (cache, result) => {
+                const fragmentId = `Todo:${id}`
+                const fragment = gql`
+                        fragment MyTodo on Todo {
+                            // cache에서 가져올 부분을 적어준다.
+                            completed
+                            otehrs
+                        }
+                    `;
+
+                cache.readFragment({
+                    // read할 fragment Id
+                    id: fragmentId,
+
+                    // fragment ~ on (Type)형식으로 사용
+                    fragment,
+                   
+                });
+            }
+            ...
+        }
+    ```
+  - modify
+    ```javascript
+        function Something ({id, completed, others}) {
+            const updateSometingCache = (cache, result) => {
+                const objectId = `Todo:${id}`
+                cache.modify({
+                    id:objectId,
+
+                    // 수정하고 싶은 filed
+                    fields: {
+                        completed(prev) {
+                            return !prev;
+                        }
+                    },
+                    otehrs(prev) {
+                        if(completed) {
+                            return prev - 1;
+                        }
+                        return prev + 1;
+                    }
+
+                });
+            }
+            ...
+        }
+    ```
+  - evict : cache내 특정 데이터를 삭제할 때 사용
+    ```javascript
+        function Something ({id}) {
+            const updateSometingCache = (cache, result) => {
+                const objectId = `Todo:${id}`
+                cache.evict({ id: objectId});
+            }
+            ...
+        }
+    ```
 ## Styled Components
 - 사용법
     ```javascript
