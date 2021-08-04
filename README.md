@@ -127,9 +127,9 @@ npm i styled-reset
         import {client} from "./apollo.js";
 
         function App() {
-        <ApolloProvider client={client}>
-            ...
-        </ApolloProvider>
+            <ApolloProvider client={client}>
+                ...
+            </ApolloProvider>
         }
     ```
   - Apollo Client에 사용자 지정 링크 추가 (Http 요청 전 헤더 추가)
@@ -395,9 +395,3 @@ npm i styled-reset
     }
     ```
 
-## setup
--   [x] Router
--   [x] Authentication
--   [x] Arch.
--   [x] Styles
--   [x] Log In / Sign Up
