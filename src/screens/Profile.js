@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { FatText } from "../components/shared";
 import Button from "../components/auth/Button";
 import PageTitle from "../components/PageTitle";
-import useUser, { ME_QUERY } from "../hooks/useUser";
+import useUser from "../hooks/useUser";
 
 const FOLLOW_USER_MUTATION = gql`
     mutation followUser($username: String!) {
@@ -40,9 +40,15 @@ const SEE_PROFILE_QUERY = gql`
             totalFollowers
             isMe
             isFollowing
+            totalPhotos
         }
     }
     ${PHOTO_FRAGMENT}
+`;
+
+const Container = styled.div`
+    direction: flex;
+    padding: 30px 20px 0px;
 `;
 
 const Header = styled.div`
@@ -50,10 +56,10 @@ const Header = styled.div`
 `;
 const Avatar = styled.img`
     margin-left: 50px;
-    height: 160px;
-    width: 160px;
+    height: 150px;
+    width: 150px;
     border-radius: 50%;
-    margin-right: 150px;
+    margin-right: 100px;
     background-color: #2c2c2c;
 `;
 const Column = styled.div``;
@@ -73,7 +79,8 @@ const Item = styled.li`
     margin-right: 20px;
 `;
 const Value = styled(FatText)`
-    font-size: 18px;
+    font-size: 17px;
+    margin-left: 4px;
 `;
 const Name = styled(FatText)`
     font-size: 20px;
@@ -123,8 +130,14 @@ const Icon = styled.span`
 const ProfileBtn = styled(Button).attrs({
     as: "span",
 })`
-    margin-left: 10px;
+    margin-left: 20px;
     margin-top: 0px;
+    background-color: rgb(0, 0, 0, 0);
+    color: rgba(var(--f75, 38, 38, 38), 1);
+    border-radius: 4px;
+    width: 84px;
+    height: 30px;
+    border: 1px solid rgba(var(--ca6, 219, 219, 219), 1);
     cursor: pointer;
 `;
 
@@ -211,7 +224,7 @@ function Profile() {
     const getButton = (seeProfile) => {
         const { isMe, isFollowing } = seeProfile;
         if (isMe) {
-            return <ProfileBtn>Edit Profile</ProfileBtn>;
+            return <ProfileBtn>프로필 편집</ProfileBtn>;
         }
         if (isFollowing) {
             return <ProfileBtn onClick={unfollowUser}>Unfollow</ProfileBtn>;
@@ -220,7 +233,7 @@ function Profile() {
         }
     };
     return (
-        <div>
+        <Container>
             <PageTitle
                 title={
                     loading
@@ -239,18 +252,26 @@ function Profile() {
                         <List>
                             <Item>
                                 <span>
+                                    게시물
                                     <Value>
-                                        {data?.seeProfile?.totalFollowers}
+                                        {data?.seeProfile?.totalPhotos}
                                     </Value>{" "}
-                                    followers
                                 </span>
                             </Item>
                             <Item>
                                 <span>
+                                    팔로워
+                                    <Value>
+                                        {data?.seeProfile?.totalFollowers}
+                                    </Value>{" "}
+                                </span>
+                            </Item>
+                            <Item>
+                                <span>
+                                    팔로잉
                                     <Value>
                                         {data?.seeProfile?.totalFollowing}
                                     </Value>{" "}
-                                    following
                                 </span>
                             </Item>
                         </List>
@@ -281,7 +302,7 @@ function Profile() {
                     </Photo>
                 ))}
             </Grid>
-        </div>
+        </Container>
     );
 }
 

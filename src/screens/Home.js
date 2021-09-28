@@ -4,8 +4,8 @@ import PageTitle from "../components/PageTitle";
 import { COMMNET_FRAGMENT, PHOTO_FRAGMENT } from "../fragments";
 
 const FEED_QUERY = gql`
-    query seeFeed {
-        seeFeed {
+    query seeFeed($offset: Int!) {
+        seeFeed(offset: $offset) {
             ...PhotoFragment
             user {
                 username
@@ -24,8 +24,8 @@ const FEED_QUERY = gql`
 `;
 
 const Home = () => {
-    const { data } = useQuery(FEED_QUERY);
-
+    const { data } = useQuery(FEED_QUERY, { variables: { offset: 0 } });
+    console.log(data);
     return (
         <div>
             <PageTitle title='Home' />
