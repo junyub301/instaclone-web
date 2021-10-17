@@ -1,5 +1,4 @@
 import { useReactiveVar } from "@apollo/client";
-import { faInstagram } from "@fortawesome/free-brands-svg-icons";
 import { faCompass, faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
@@ -13,7 +12,7 @@ const SHeader = styled.header`
     width: 100%;
     border-bottom: 1px solid ${(props) => props.theme.borderColor};
     background-color: ${(props) => props.theme.bgColor};
-    padding: 18px 0px;
+    /* padding: 18px 0px; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -46,6 +45,11 @@ const IconsContainer = styled.div`
     align-items: center;
 `;
 
+const Logo = styled.img`
+    width: 103px;
+    height: 48;
+`;
+
 function Header() {
     const isLoggedIn = useReactiveVar(isLoggedInVar);
     const { data } = useUser();
@@ -53,7 +57,10 @@ function Header() {
         <SHeader>
             <Wrapper>
                 <Column>
-                    <FontAwesomeIcon icon={faInstagram} size='2x' />
+                    <Link to={"/"}>
+                        <Logo src='/logo.png' />
+                    </Link>
+                    {/* <FontAwesomeIcon icon={faInstagram} size='2x' /> */}
                 </Column>
                 <Column>
                     {isLoggedIn ? (
@@ -71,7 +78,7 @@ function Header() {
                             </Icon>
                         </IconsContainer>
                     ) : (
-                        <Link href={routes.home}>
+                        <Link to={routes.home}>
                             <Button>Login</Button>
                         </Link>
                     )}

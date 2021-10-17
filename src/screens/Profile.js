@@ -1,13 +1,14 @@
-import { gql, useQuery, useMutation, useApolloClient } from "@apollo/client";
-import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
+import { gql, useApolloClient, useMutation, useQuery } from "@apollo/client";
+import { faComment, faHeart, faTh } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useParams } from "react-router-dom";
-import { PHOTO_FRAGMENT } from "../fragments";
+import { Link, useParams, Route } from "react-router-dom";
 import styled from "styled-components";
-import { FatText } from "../components/shared";
 import Button from "../components/auth/Button";
 import PageTitle from "../components/PageTitle";
+import { FatText } from "../components/shared";
+import { PHOTO_FRAGMENT } from "../fragments";
 import useUser from "../hooks/useUser";
+import { faBookmark, faUserCircle } from "@fortawesome/free-regular-svg-icons";
 
 const FOLLOW_USER_MUTATION = gql`
     mutation followUser($username: String!) {
@@ -53,6 +54,7 @@ const Container = styled.div`
 
 const Header = styled.div`
     display: flex;
+    margin-bottom: 44px;
 `;
 const Avatar = styled.img`
     margin-left: 50px;
@@ -91,7 +93,28 @@ const Grid = styled.div`
     grid-auto-rows: 290px;
     grid-template-columns: repeat(3, 1fr);
     gap: 30px;
-    margin-top: 50px;
+`;
+
+const GridHeader = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid rgba(219, 219, 219);
+`;
+
+const Tab = styled(Link)`
+    display: flex;
+    height: 52px;
+    margin-right: 60px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    span {
+        display: flex;
+        span {
+            margin-left: 6px;
+        }
+    }
 `;
 
 const Photo = styled.div`
@@ -286,21 +309,44 @@ function Profile() {
                     <Row>{data?.seeProfile?.bio}</Row>
                 </Column>
             </Header>
+            <GridHeader>
+                <Tab to={`/users/${username}`}>
+                    <span>
+                        <FontAwesomeIcon icon={faTh} />
+                        <span>게시물</span>
+                    </span>
+                </Tab>
+                <Tab to={`/users/${username}/save`}>
+                    <span>
+                        <FontAwesomeIcon icon={faBookmark} />
+                        <span>저장됨</span>
+                    </span>
+                </Tab>
+                <Tab to={`/users/${username}/tag`}>
+                    <span>
+                        <FontAwesomeIcon icon={faUserCircle} />
+                        <span>태그됨</span>
+                    </span>
+                </Tab>
+            </GridHeader>
             <Grid>
-                {data?.seeProfile?.photos.map((photo) => (
-                    <Photo key={photo.id} bg={photo.file}>
-                        <Icons>
-                            <Icon>
-                                <FontAwesomeIcon icon={faHeart} />
-                                {photo.likes}
-                            </Icon>
-                            <Icon>
-                                <FontAwesomeIcon icon={faComment} />
-                                {photo.commentNumber}
-                            </Icon>
-                        </Icons>
-                    </Photo>
-                ))}
+                <Route exact path={`/users/:username`}>
+                    {data?.seeProfile?.photos.map((photo) => (
+                        <Photo key={photo.id} bg={photo.file}>
+                            <Icons>
+                                <Icon>
+                                    <FontAwesomeIcon icon={faHeart} />
+                                    {photo.likes}
+                                </Icon>
+                                <Icon>
+                                    <FontAwesomeIcon icon={faComment} />
+                                    {photo.commentNumber}
+                                </Icon>
+                            </Icons>
+                        </Photo>
+                    ))}
+                </Route>
+                <Route path={`/users/:username/save`}>save</Route>
             </Grid>
         </Container>
     );
