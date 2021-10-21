@@ -1,5 +1,5 @@
 import { gql, useApolloClient, useMutation, useQuery } from "@apollo/client";
-import { faComment, faHeart, faTh } from "@fortawesome/free-solid-svg-icons";
+import { faTh } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useParams, Route } from "react-router-dom";
 import styled from "styled-components";
@@ -9,6 +9,7 @@ import { FatText } from "../components/shared";
 import { PHOTO_FRAGMENT } from "../fragments";
 import useUser from "../hooks/useUser";
 import { faBookmark, faUserCircle } from "@fortawesome/free-regular-svg-icons";
+import Content from "../components/profile/Content";
 
 const FOLLOW_USER_MUTATION = gql`
     mutation followUser($username: String!) {
@@ -42,6 +43,17 @@ const SEE_PROFILE_QUERY = gql`
             isMe
             isFollowing
             totalPhotos
+        }
+    }
+    ${PHOTO_FRAGMENT}
+`;
+
+const SEE_PHOTO_SAVES = gql`
+    query seePhothSaves($userId: Int!) {
+        seePhothSaves(userId: $userId) {
+            photo {
+                ...PhotoFragment
+            }
         }
     }
     ${PHOTO_FRAGMENT}
@@ -117,38 +129,6 @@ const Tab = styled(Link)`
     }
 `;
 
-const Photo = styled.div`
-    background-image: url(${(props) => props.bg});
-    background-size: cover;
-    position: relative;
-`;
-
-const Icons = styled.div`
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    opacity: 0;
-    &:hover {
-        opacity: 1;
-    }
-`;
-
-const Icon = styled.span`
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    margin: 0px 5px;
-    svg {
-        font-size: 14px;
-        margin-right: 5px;
-    }
-`;
-
 // 상속된 스타일은 유지하되 태그 타입을 변형 시킬 때 사용
 const ProfileBtn = styled(Button).attrs({
     as: "span",
@@ -171,6 +151,11 @@ function Profile() {
     const { data, loading } = useQuery(SEE_PROFILE_QUERY, {
         variables: {
             username,
+        },
+    });
+    const { data: saveData } = useQuery(SEE_PHOTO_SAVES, {
+        variables: {
+            userId: userData?.me?.id,
         },
     });
     const unfollowUserUpdate = (cache, result) => {
@@ -332,21 +317,14 @@ function Profile() {
             <Grid>
                 <Route exact path={`/users/:username`}>
                     {data?.seeProfile?.photos.map((photo) => (
-                        <Photo key={photo.id} bg={photo.file}>
-                            <Icons>
-                                <Icon>
-                                    <FontAwesomeIcon icon={faHeart} />
-                                    {photo.likes}
-                                </Icon>
-                                <Icon>
-                                    <FontAwesomeIcon icon={faComment} />
-                                    {photo.commentNumber}
-                                </Icon>
-                            </Icons>
-                        </Photo>
+                        <Content photo={photo} key={photo.id} />
                     ))}
                 </Route>
-                <Route path={`/users/:username/save`}>save</Route>
+                <Route path={`/users/:username/save`}>
+                    {saveData?.seePhothSaves?.map((save) => (
+                        <Content photo={save.photo} key={save.photo.id} />
+                    ))}
+                </Route>
             </Grid>
         </Container>
     );
