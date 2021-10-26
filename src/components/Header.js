@@ -1,4 +1,4 @@
-import { useReactiveVar } from "@apollo/client";
+import { useReactiveVar, gql, useQuery } from "@apollo/client";
 import { faCompass, faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
@@ -7,6 +7,25 @@ import { isLoggedInVar } from "../apollo";
 import useUser from "../hooks/useUser";
 import routes from "../screens/routes";
 import Avatar from "./Avatar";
+import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { PHOTO_FRAGMENT } from "../fragments";
+
+const SEARCH_USERS_QUERY = gql`
+    query searchUsers($keyword: String!, $lastId: Int) {
+        searchUsers(keyword: $keyword, lastId: $lastId) {
+            firstName
+            lastName
+            username
+            bio
+            avatar
+            photos {
+                ...PhotoFragment
+            }
+        }
+    }
+    ${PHOTO_FRAGMENT}
+`;
 
 const SHeader = styled.header`
     width: 100%;
@@ -50,9 +69,53 @@ const Logo = styled.img`
     height: 48;
 `;
 
+const Input = styled.input`
+    border: 1px solid rgb(219, 219, 219);
+    border-radius: 3px;
+    height: 28px;
+    width: 215px;
+    &::placeholder {
+        align-items: center;
+        text-align: center;
+        font-size: 12px;
+    }
+`;
+
+const UserContainer = styled.div`
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 0px solid rgb(0, 0, 0);
+    top: 12px;
+`;
+
+const Users = styled.div`
+    border: 0px solid rgb(0, 0, 0);
+    background-color: rgb(255, 255, 255);
+    border-radius: 6px;
+    position: absolute;
+    box-shadow: rgba(0, 0, 0, 0.098) 0px 0px 5px 1px;
+    height: 375px;
+    width: 362px;
+`;
+
 function Header() {
     const isLoggedIn = useReactiveVar(isLoggedInVar);
     const { data } = useUser();
+    const { register, watch } = useForm({
+        mode: "onChange",
+        defaultValues: {
+            username: "",
+        },
+    });
+    const { username } = watch();
+
+    const { data: searchUser, loading } = useQuery(SEARCH_USERS_QUERY, {
+        variables: {
+            keyword: username,
+        },
+    });
+
     return (
         <SHeader>
             <Wrapper>
@@ -61,6 +124,16 @@ function Header() {
                         <Logo src='/logo.png' />
                     </Link>
                     {/* <FontAwesomeIcon icon={faInstagram} size='2x' /> */}
+                </Column>
+                <Column>
+                    <Input
+                        {...register("username")}
+                        type='text'
+                        placeholder='검색'
+                    />
+                    <UserContainer>
+                        <Users />
+                    </UserContainer>
                 </Column>
                 <Column>
                     {isLoggedIn ? (
