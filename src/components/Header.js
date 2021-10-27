@@ -1,4 +1,4 @@
-import { useReactiveVar, gql, useQuery } from "@apollo/client";
+import { useReactiveVar } from "@apollo/client";
 import { faCompass, faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
@@ -8,24 +8,8 @@ import useUser from "../hooks/useUser";
 import routes from "../screens/routes";
 import Avatar from "./Avatar";
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
-import { PHOTO_FRAGMENT } from "../fragments";
-
-const SEARCH_USERS_QUERY = gql`
-    query searchUsers($keyword: String!, $lastId: Int) {
-        searchUsers(keyword: $keyword, lastId: $lastId) {
-            firstName
-            lastName
-            username
-            bio
-            avatar
-            photos {
-                ...PhotoFragment
-            }
-        }
-    }
-    ${PHOTO_FRAGMENT}
-`;
+import { useState } from "react";
+import Users from "./header/Users";
 
 const SHeader = styled.header`
     width: 100%;
@@ -83,20 +67,25 @@ const Input = styled.input`
 
 const UserContainer = styled.div`
     position: relative;
-    display: flex;
+    display: ${(props) => (props.toggleSearch ? "flex" : "none")};
     flex-direction: column;
     border: 0px solid rgb(0, 0, 0);
+    margin-left: -80px;
     top: 12px;
 `;
 
-const Users = styled.div`
-    border: 0px solid rgb(0, 0, 0);
-    background-color: rgb(255, 255, 255);
-    border-radius: 6px;
+const Arrow = styled.div`
+    bottom: 0;
+    top: -6px;
+    left: 185.5px;
+    background-color: rgba(var(--d87, 255, 255, 255), 1);
+    border: 1px solid rgba(var(--f23, 255, 255, 255), 1);
+    height: 14px;
+    width: 14px;
     position: absolute;
-    box-shadow: rgba(0, 0, 0, 0.098) 0px 0px 5px 1px;
-    height: 375px;
-    width: 362px;
+    transform: rotate(45deg);
+    box-shadow: 0 0 5px 1px rgba(var(--jb7, 0, 0, 0), 0.0975);
+    line-height: 18px;
 `;
 
 function Header() {
@@ -110,11 +99,7 @@ function Header() {
     });
     const { username } = watch();
 
-    const { data: searchUser, loading } = useQuery(SEARCH_USERS_QUERY, {
-        variables: {
-            keyword: username,
-        },
-    });
+    const [toggleSearch, setToggleSearch] = useState(false);
 
     return (
         <SHeader>
@@ -130,10 +115,15 @@ function Header() {
                         {...register("username")}
                         type='text'
                         placeholder='검색'
+                        onClick={() => setToggleSearch(!toggleSearch)}
+                        autoComplete='off'
                     />
-                    <UserContainer>
-                        <Users />
-                    </UserContainer>
+                    {toggleSearch ? (
+                        <UserContainer toggleSearch={Boolean(toggleSearch)}>
+                            <Arrow />
+                            <Users username={username} />
+                        </UserContainer>
+                    ) : null}
                 </Column>
                 <Column>
                     {isLoggedIn ? (
