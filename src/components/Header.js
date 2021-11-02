@@ -1,14 +1,14 @@
 import { useReactiveVar } from "@apollo/client";
 import { faCompass, faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { isLoggedInVar } from "../apollo";
 import useUser from "../hooks/useUser";
 import routes from "../screens/routes";
 import Avatar from "./Avatar";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
 import Users from "./header/Users";
 
 const SHeader = styled.header`
@@ -67,7 +67,7 @@ const Input = styled.input`
 
 const UserContainer = styled.div`
     position: relative;
-    display: ${(props) => (props.toggleSearch ? "flex" : "none")};
+    display: flex;
     flex-direction: column;
     border: 0px solid rgb(0, 0, 0);
     margin-left: -80px;
@@ -101,6 +101,22 @@ function Header() {
 
     const [toggleSearch, setToggleSearch] = useState(false);
 
+    const el = useRef();
+    const toggelSearch = (e) => {
+        if (!toggleSearch && el.current.contains(e.target)) {
+            setToggleSearch(true);
+        } else {
+            setToggleSearch(false);
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener("click", toggelSearch);
+        return () => {
+            window.removeEventListener("click", toggelSearch);
+        };
+    }, []);
+
     return (
         <SHeader>
             <Wrapper>
@@ -115,11 +131,11 @@ function Header() {
                         {...register("username")}
                         type='text'
                         placeholder='검색'
-                        onClick={() => setToggleSearch(!toggleSearch)}
                         autoComplete='off'
+                        ref={el}
                     />
                     {toggleSearch ? (
-                        <UserContainer toggleSearch={Boolean(toggleSearch)}>
+                        <UserContainer>
                             <Arrow />
                             <Users username={username} />
                         </UserContainer>

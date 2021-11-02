@@ -6,6 +6,7 @@ import User from "./User";
 const SEARCH_USERS_QUERY = gql`
     query searchUsers($keyword: String!, $lastId: Int) {
         searchUsers(keyword: $keyword, lastId: $lastId) {
+            id
             firstName
             lastName
             username
@@ -32,16 +33,16 @@ const UsersContainer = styled.div`
 `;
 
 function Users({ username }) {
-    const { data, loading } = useQuery(SEARCH_USERS_QUERY, {
+    const { data } = useQuery(SEARCH_USERS_QUERY, {
         variables: {
             keyword: username,
         },
     });
-    console.log(data?.searchUsers, loading);
     return (
         <UsersContainer>
             {data?.searchUsers?.map((user) => (
                 <User
+                    key={user.id}
                     id={user.id}
                     avatar={user.avatar}
                     username={user.username}

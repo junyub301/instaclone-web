@@ -4,24 +4,36 @@ import Avatar from "../Avatar";
 
 const UserContainer = styled(Link)`
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     padding: 8px 16px;
+    div:first-child {
+        margin-right: 12px;
+    }
+`;
+
+const Id = styled.div`
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 5px;
+`;
+
+const Name = styled.div`
+    color: rgba(var(--f52, 142, 142, 142), 1);
 `;
 
 function User({ id, avatar, username, firstName, lastName }) {
     return (
-        <UserContainer>
+        <UserContainer to={`/users/${username}`}>
             <div>
                 <Avatar lg url={avatar} />
             </div>
             <div>
-                <div>{username}</div>
-                <div>
+                <Id>{username}</Id>
+                <Name>
                     {lastName}
                     {firstName}
-                </div>
+                </Name>
             </div>
-            <div>삭제</div>
         </UserContainer>
     );
 }
