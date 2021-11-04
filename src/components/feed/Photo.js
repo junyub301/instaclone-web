@@ -1,22 +1,34 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import PropTypes from "prop-types";
-import styled from "styled-components";
-import { FatText } from "../shared";
+import { gql, useMutation } from "@apollo/client";
 import {
     faBookmark,
     faComment,
     faHeart,
     faPaperPlane,
 } from "@fortawesome/free-regular-svg-icons";
-import { faHeart as SolidHeart } from "@fortawesome/free-solid-svg-icons";
-import Avatar from "../Avatar";
-import { gql, useMutation } from "@apollo/client";
-import Comments from "./Comments";
+import {
+    faBookmark as SolidBookmark,
+    faHeart as SolidHeart,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import styled from "styled-components";
+import Avatar from "../Avatar";
+import { FatText } from "../shared";
+import Comments from "./Comments";
 
 const TOGGLE_LIKE_MUTATION = gql`
     mutation toggleLike($id: Int!) {
         toggleLike(id: $id) {
+            ok
+            error
+        }
+    }
+`;
+
+const TOGGLE_SAVE_MUTATION = gql`
+    mutation toggleSave($id: Int!) {
+        toggleSave(id: $id) {
             ok
             error
         }
@@ -73,6 +85,10 @@ const Likes = styled(FatText)`
     display: block;
 `;
 
+const BookmarkAction = styled.div`
+    cursor: pointer;
+`;
+
 function Photo({
     id,
     user,
@@ -82,6 +98,7 @@ function Photo({
     caption,
     commentNumber,
     comments,
+    isSaved,
 }) {
     const updateToggleLike = (cache, result) => {
         const {
@@ -109,12 +126,41 @@ function Photo({
             });
         }
     };
+
+    const updateToggleSave = (cache, result) => {
+        const {
+            data: {
+                toggleSave: { ok },
+            },
+        } = result;
+
+        if (ok) {
+            // Porps로 값을 넘기지 않았을 경우 cahce를 통해 값을 받아와 update할 수 있다.
+            const photoId = `Photo:${id}`;
+            cache.modify({
+                id: photoId,
+                fields: {
+                    isSaved(prev) {
+                        return !prev;
+                    },
+                },
+            });
+        }
+    };
     const [toggleLikeMutation] = useMutation(TOGGLE_LIKE_MUTATION, {
         variables: {
             id,
         },
         update: updateToggleLike,
     });
+
+    const [toggleSaveMutation] = useMutation(TOGGLE_SAVE_MUTATION, {
+        variables: {
+            id,
+        },
+        update: updateToggleSave,
+    });
+
     return (
         <PhotoContainer key={id}>
             <PhotoHeader>
@@ -145,7 +191,11 @@ function Photo({
                         </PhotoAction>
                     </div>
                     <div>
-                        <FontAwesomeIcon icon={faBookmark} />
+                        <BookmarkAction onClick={toggleSaveMutation}>
+                            <FontAwesomeIcon
+                                icon={isSaved ? SolidBookmark : faBookmark}
+                            />
+                        </BookmarkAction>
                     </div>
                 </PhotoActions>
                 <Likes>{likes === 1 ? "1 like" : `${likes} likes`}</Likes>

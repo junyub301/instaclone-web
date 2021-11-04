@@ -8,6 +8,7 @@ export const PHOTO_FRAGMENT = gql`
         likes
         commentNumber
         isLiked
+        isSaved
     }
 `;
 
