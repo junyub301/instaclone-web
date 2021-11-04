@@ -9,6 +9,9 @@ const UserContainer = styled(Link)`
     div:first-child {
         margin-right: 12px;
     }
+    &:hover {
+        background-color: rgba(var(--b3f, 250, 250, 250), 1);
+    }
 `;
 
 const Id = styled.div`

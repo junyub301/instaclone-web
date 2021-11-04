@@ -1,16 +1,33 @@
-import { useReactiveVar } from "@apollo/client";
+import { gql, useQuery, useReactiveVar } from "@apollo/client";
 import { faCompass, faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { isLoggedInVar } from "../apollo";
+import { PHOTO_FRAGMENT } from "../fragments";
 import useUser from "../hooks/useUser";
 import routes from "../screens/routes";
 import Avatar from "./Avatar";
-import Users from "./header/Users";
+import User from "./header/User";
 
+const SEARCH_USERS_QUERY = gql`
+    query searchUsers($keyword: String!, $lastId: Int) {
+        searchUsers(keyword: $keyword, lastId: $lastId) {
+            id
+            firstName
+            lastName
+            username
+            bio
+            avatar
+            photos {
+                ...PhotoFragment
+            }
+        }
+    }
+    ${PHOTO_FRAGMENT}
+`;
 const SHeader = styled.header`
     width: 100%;
     border-bottom: 1px solid ${(props) => props.theme.borderColor};
@@ -65,13 +82,25 @@ const Input = styled.input`
     }
 `;
 
-const UserContainer = styled.div`
+const SearchContainer = styled.div`
     position: relative;
     display: flex;
     flex-direction: column;
     border: 0px solid rgb(0, 0, 0);
     margin-left: -80px;
     top: 12px;
+`;
+
+const UsersContainer = styled.div`
+    border: 0px solid rgb(0, 0, 0);
+    background-color: rgb(255, 255, 255);
+    border-radius: 6px;
+    position: absolute;
+    box-shadow: rgba(0, 0, 0, 0.098) 0px 0px 5px 1px;
+    height: 362px;
+    width: 375px;
+    display: flex;
+    flex-direction: column;
 `;
 
 const Arrow = styled.div`
@@ -97,13 +126,11 @@ function Header() {
             username: "",
         },
     });
+
     const { username } = watch();
-
     const [toggleSearch, setToggleSearch] = useState(false);
-
-    const el = useRef();
-    const toggelSearch = (e) => {
-        if (!toggleSearch && el.current.contains(e.target)) {
+    const toggelChange = (e) => {
+        if (!toggleSearch && e.target.name === "username") {
             setToggleSearch(true);
         } else {
             setToggleSearch(false);
@@ -111,12 +138,18 @@ function Header() {
     };
 
     useEffect(() => {
-        window.addEventListener("click", toggelSearch);
+        window.addEventListener("click", toggelChange);
         return () => {
-            window.removeEventListener("click", toggelSearch);
+            window.removeEventListener("click", toggelChange);
         };
     }, []);
 
+    const { data: users } = useQuery(SEARCH_USERS_QUERY, {
+        skip: username === "",
+        variables: {
+            keyword: username,
+        },
+    });
     return (
         <SHeader>
             <Wrapper>
@@ -132,13 +165,23 @@ function Header() {
                         type='text'
                         placeholder='검색'
                         autoComplete='off'
-                        ref={el}
                     />
                     {toggleSearch ? (
-                        <UserContainer>
+                        <SearchContainer>
                             <Arrow />
-                            <Users username={username} />
-                        </UserContainer>
+                            <UsersContainer>
+                                {users?.searchUsers?.map((user) => (
+                                    <User
+                                        key={user.id}
+                                        id={user.id}
+                                        avatar={user.avatar}
+                                        username={user.username}
+                                        firstName={user.firstName}
+                                        lastName={user.lastName}
+                                    />
+                                ))}
+                            </UsersContainer>
+                        </SearchContainer>
                     ) : null}
                 </Column>
                 <Column>
